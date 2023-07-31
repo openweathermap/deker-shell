@@ -35,7 +35,7 @@ help_text = """
 Preset variables:
 - client: Client (registry of collections) instance, connected to the uri-database
 - collections: list of Client collections names
-- collection: global default collection variable, set by use("coll_name") method; 
+- collection: global default collection variable, set by use("coll_name") method;
 - np: numpy library
 
 Classes:
