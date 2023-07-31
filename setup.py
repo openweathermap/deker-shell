@@ -43,15 +43,6 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
         if line.strip("\n") and not line.startswith(("#", "-i", "--index", "--extra-index"))
     ]
 
-dev_requirements = []
-for reqs in ("requirements_dev.txt", "requirements_doc.txt"):
-    req = [
-        line.strip("\n")
-        for line in f
-        if line.strip("\n") and not line.startswith(("#", "-i", "--index", "--extra-index"))
-    ]
-    dev_requirements.extend(req)
-
 
 with open("README.md") as f:
     long_description = f.read()
@@ -95,6 +86,5 @@ setup_kwargs = dict(
         "Programming Language :: Python :: 3.12",
     ],
     install_requires=requirements,
-    extras_require={"dev": dev_requirements},
 )
 setup(**setup_kwargs)
