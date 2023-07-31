@@ -1,0 +1,2 @@
+include README.md
+include deker_shell/__version__.py
