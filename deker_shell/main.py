@@ -24,7 +24,6 @@ from typing import TYPE_CHECKING
 import numpy as np  # noqa F401
 
 from deker import *  # noqa F403
-from deker import __version__
 from ptpython.repl import embed
 
 from deker_shell.config import configure
@@ -81,8 +80,6 @@ def start() -> None:
         print("No params passed")
     elif sys.argv[1].endswith(".py"):
         runpy.run_path(path_name=sys.argv[1])
-    elif sys.argv[1] == "--version":
-        print(f"deker {__version__}")
     else:
         connection: str = sys.argv[1]
         validate_uri(connection)

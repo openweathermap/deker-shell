@@ -143,37 +143,9 @@ jobs:
           name: coverage-reports
           path: coverage.xml
 
-  tox_tests:
-    needs: setup
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    container:
-      image: ghcr.io/openweathermap/deker/deker-embedded/tox:latest
-      env:
-        PACKAGE_VERSION: ${{ github.REF_NAME }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Set python versions
-        run:  pyenv global 3.9 3.10 3.11
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install tox
-        run: |
-          pip install tox
-        env:
-          PIP_DISABLE_PIP_VERSION_CHECK: 1
-      - name: Run tox tests
-        run: tox
-        env:
-          PIP_DISABLE_PIP_VERSION_CHECK: 1
-          PACKAGE_VERSION: ${{ github.REF_NAME }}
-
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
-    needs: tox_tests
+    needs: [linters, tests, coverage]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ${{ matrix.os }}
     env:
@@ -191,7 +163,7 @@ jobs:
 
 
   build_sdist:
-    needs: tox_tests
+    needs: [linters, tests, coverage]
     env:
       PACKAGE_VERSION: ${{ github.REF_NAME }}
     name: Build source distribution
@@ -214,8 +186,10 @@ jobs:
       id-token: write
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     environment:
-      name: pypi
-      url: https://pypi.org/p/deker-shell
+#      name: pypi
+#      url: https://pypi.org/p/deker-shell
+      name: testpypi
+      url: https://test.pypi.org/p/deker-shell
 
     steps:
       - uses: actions/download-artifact@v3
@@ -227,3 +201,8 @@ jobs:
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+        with:
+          verify-metadata: false
+          # for test pypi
+          repository-url: https://test.pypi.org/legacy/
