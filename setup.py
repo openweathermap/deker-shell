@@ -27,7 +27,7 @@ def get_version() -> str:
     )
     try:
         tag_version = re.search(regex, ci_commit_tag, re.X + re.IGNORECASE).group()
-        print("", tag_version, __version__)
+        print("Versions tag/inner", tag_version, __version__)
 
         if tag_version != __version__:
             sys.exit("Package version in __version__.py doesn't match release version")
