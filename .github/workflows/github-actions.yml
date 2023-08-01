@@ -186,8 +186,9 @@ jobs:
       id-token: write
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     environment:
-      name: pypi
+#      name: pypi
 #      url: https://pypi.org/p/deker-shell
+      name: testpypi
       url: https://test.pypi.org/p/deker-shell
 
     steps:
@@ -200,4 +201,8 @@ jobs:
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-#        uses: pypa/test-pypi-publish@release/v1
+
+        with:
+          verify-metadata: false
+          # for test pypi
+          repository-url: https://test.pypi.org/legacy/

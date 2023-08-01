@@ -51,3 +51,46 @@ extend_skip = [".md", ".json"]
 all = true
 diff = true
 exclude = "venv/*,.git/*,__pycache__/*"
+
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+
+[project]
+name = "deker_shell"
+requires-python = ">=3.9"
+dynamic = ["version", "readme", "dependencies"]
+authors = [
+    {name = "OpenWeather", email = "info@openweathermap.org"},
+]
+maintainers = [
+        {name = "OpenWeather", email = "info@openweathermap.org"},
+]
+description = "Interactive shell for Deker"
+license = {text = "GPL-3.0-only"}
+license_files=["LICENSE"]
+platforms=["any"]
+classifiers = [
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Operating System :: Unix",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS :: MacOS X",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"]}
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools]
+packages = ["deker_shell"]
+
+[tool.setuptools_scm]
