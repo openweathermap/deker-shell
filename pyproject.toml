@@ -1,0 +1,96 @@
+# https://black.readthedocs.io/en/stable/
+[tool.black]
+line-length = 120
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+# A regex preceded with ^/ will apply only to files and directories
+# in the root of the project.
+^/foo.py  # exclude a file named foo.py in the root of the project (in addition to the defaults)
+'''
+
+# https://mypy.readthedocs.io/en/stable/
+# https://pypi.org/project/mypy-extensions/
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+scripts_are_modules = true
+allow_redefinition = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_no_return = false
+show_error_context = true
+show_column_numbers = true
+show_error_codes = true
+color_output = false
+pretty = true
+exclude = [
+    '^setup\.py$',
+    '^tmp\.py$',
+    '^venv/',
+    '^test+\.py$',
+    '^conftest\.py$',
+    '^tests/'
+]
+
+# https://pycqa.github.io/isort/
+[tool.isort]
+py_version = 39
+sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']
+profile = "black"
+atomic = true
+include_trailing_comma = true
+line_length = 120
+lines_after_imports = 2
+lines_between_types = 1
+multi_line_output = 3
+extend_skip = [".md", ".json"]
+
+# https://hadialqattan.github.io/pycln/#/README
+[tool.pycln]
+all = true
+diff = true
+exclude = "venv/*,.git/*,__pycache__/*"
+
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+
+[project]
+name = "deker_shell"
+requires-python = ">=3.9"
+dynamic = ["version", "readme", "dependencies"]
+authors = [
+    {name = "OpenWeather", email = "info@openweathermap.org"},
+]
+maintainers = [
+        {name = "OpenWeather", email = "info@openweathermap.org"},
+]
+description = "Interactive shell for Deker"
+license = {text = "GPL-3.0-only"}
+license_files=["LICENSE"]
+platforms=["any"]
+classifiers = [
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Operating System :: Unix",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS :: MacOS X",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"]}
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools]
+packages = ["deker_shell"]
+
+[tool.setuptools_scm]

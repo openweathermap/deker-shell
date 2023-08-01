@@ -1,0 +1,22 @@
+black
+coverage
+darglint
+flake8
+flake8-bugbear
+flake8-docstrings
+flake8-import-order
+flake8-pytest-style
+isort
+mypy
+mypy-extensions
+pep8-naming
+pre-commit
+pycln
+pytest
+pytest-asyncio
+pytest-cov
+# pytest-pythonpath  # requires (2.5.2 >= pytest < 7); pytest >= 7 does not need this package
+pytest-random-order
+pytest-sugar
+ssort
+deker>=1.0.0b
