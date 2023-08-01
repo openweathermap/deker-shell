@@ -26,12 +26,14 @@ def get_version() -> str:
         r")$"
     )
     try:
-        version = re.search(regex, ci_commit_tag, re.X + re.IGNORECASE).group()
-        if version != __version__:
+        tag_version = re.search(regex, ci_commit_tag, re.X + re.IGNORECASE).group()
+        print("", tag_version, __version__)
+
+        if tag_version != __version__:
             sys.exit("Package version in __version__.py doesn't match release version")
-        return version
-    except SystemExit:
-        pass
+        return tag_version
+    except SystemExit as e:
+        raise e
     except Exception:
         sys.exit(f"No valid version could be found in CI commit tag {ci_commit_tag}")
 
