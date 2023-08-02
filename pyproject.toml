@@ -90,5 +90,5 @@ dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools]
 packages = ["deker_shell"]
-
+license-files = ["LICENSE"]
 [tool.setuptools_scm]
