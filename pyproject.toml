@@ -16,7 +16,7 @@ license = "GPL-3.0-only"
 readme = "README.md"
 documentation = 'https://docs.deker.io/'
 homepage = 'https://deker.io/'
-repository = 'https://github.com/openweathermap/deker'
+repository = 'https://github.com/openweathermap/deker-shell'
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
