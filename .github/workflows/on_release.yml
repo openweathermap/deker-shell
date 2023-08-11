@@ -1,0 +1,85 @@
+name: build
+
+on:
+  push:
+    tags:
+      - 'v[1-9]+.[0-9]+.[0-9]+'
+
+env:
+  PYTHON_IMAGE: 3.9
+
+jobs:
+  tox_tests:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/openweathermap/deker/deker-embedded/tox:latest
+      env:
+        PACKAGE_VERSION: ${{ github.REF_NAME }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Set python versions
+        run:  pyenv global 3.9 3.10 3.11
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install tools
+        run: |
+          env
+          pip install tox poetry
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+      - name: Make requirements file
+        run: poetry export --without-hashes > requirements.txt
+
+      - name: Run tox tests
+        run: |
+          export PIP_EXTRA_INDEX_URL=https://test.pypi.org/simple
+          env
+          tox
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
+          PACKAGE_VERSION: ${{ github.REF_NAME }}
+
+  build_sdist:
+    needs: tox_tests
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Build sdist
+        run: |
+          pip install poetry-dynamic-versioning
+          pip install poetry
+          poetry dynamic-versioning enable
+          poetry build -f sdist
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: dist/*.tar.gz
+
+  upload_pypi:
+    needs: build_sdist
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/p/deker-shell
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          # unpacks default artifact into dist/
+          # if `name: artifact` is omitted, the action will create extra parent dir
+          name: artifact
+          path: dist
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
