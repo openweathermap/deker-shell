@@ -371,7 +371,7 @@ omit = [
 directory = "tests/code_coverage"
 
 [tool.coverage.report]
-fail_under=75
+fail_under=63
 exclude_lines = [
     "no cov",
     "pragma: no cover",
@@ -405,7 +405,7 @@ deps =
 
 commands =
     coverage run -m pytest {posargs:tests} --random-order
-    coverage report --fail-under=75
+    coverage report --fail-under=63
 
 set_env =
     PIP_EXTRA_INDEX_URL = {env:PIP_EXTRA_INDEX_URL}

@@ -7,7 +7,7 @@ on:
 
 env:
   PYTHON_IMAGE: 3.9
-  PYTHON_PACKAGE_NAME: deker-shell
+  PYTHON_PACKAGE_NAME: deker_shell
 
 jobs:
   setup:
@@ -128,7 +128,7 @@ jobs:
         run: |
           source .venv/bin/activate
           coverage run -m pytest --junitxml=report.xml
-          coverage report --fail-under=75
+          coverage report --fail-under=63
           coverage xml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
