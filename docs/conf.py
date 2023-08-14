@@ -46,7 +46,7 @@ master_doc = "index"
 # built documents.
 #
 # The short X.Y version.
-version = "v1.0.0"
+version = os.getenv("GITHUB_REF_NAME") if os.getenv("GITHUB_REF_TYPE", "") == "tag" else "latest"
 # The full version, including alpha/beta/rc tags.
 release = version
 
