@@ -10,10 +10,10 @@ env:
 
 jobs:
   tox_tests:
-      uses: openweathermap/deker-actions/.github/workflows/tox.yml@master
-      with:
-        package-name: $PACKAGE_NAME
-        min-coverage: 63
+    uses: openweathermap/deker-actions/.github/workflows/tox.yml@master
+    with:
+      package-name: $PACKAGE_NAME
+      min-coverage: 63
 
   build_sdist:
     needs: tox_tests
