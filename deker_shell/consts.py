@@ -19,13 +19,21 @@ import deker
 
 help_start = """
 This is an interactive python interface to Deker, based on ptpython.
+
 You have an initiated 'client' instance to create and get collections,
 'collections' variable with a list of collection names
 and 'collection' variable that can be set by 'use' method.
-If you need more information, call help()
+
 Example:
-    use("test")
-    collection.create()
+    > collections
+    # ["test", "collection_a", "collection_b", ...]
+    > collection  # nothing
+    > use("test")
+    > collection
+    # test
+    > collection.create()
+
+If you need more information, call help()
 ---
 F2 - ptpython menu
 F3 - history

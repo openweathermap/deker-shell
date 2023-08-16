@@ -46,7 +46,7 @@ master_doc = "index"
 # built documents.
 #
 # The short X.Y version.
-version = "v1.0.0"
+version = os.getenv("GITHUB_REF_NAME") if os.getenv("GITHUB_REF_TYPE", "") == "tag" else "latest"
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -76,8 +76,6 @@ todo_include_todos = False
 # a list of builtin themes.
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-    "analytics_id": "G-XXXXXXXXXX",  #  Provided by Google in your dashboard
-    "analytics_anonymize_ip": False,
     "display_version": True,
     "prev_next_buttons_location": "bottom",
     "style_external_links": False,
@@ -97,7 +95,7 @@ html_static_path = ["_static"]
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "Dekerdoc"
+htmlhelp_basename = "deker-shell-doc"
 
 # -- Custom Settings -------------------------------------------------------
 

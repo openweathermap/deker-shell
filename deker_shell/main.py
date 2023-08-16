@@ -35,16 +35,16 @@ from deker_shell.utils import validate_uri
 if TYPE_CHECKING:
     from deker import Client, Collection
 
-global collection  # default collection variable, set by use("coll_name") method
+collection = None  # default collection variable, set by use("coll_name") method
 
 
-async def interactive_shell(connection: str) -> None:
+async def interactive_shell(uri: str) -> None:
     """Coroutine that starts a Python REPL from which we can access the Deker interface.
 
-    :param connection: client uri
+    :param uri: client uri
     """
     try:
-        client: Client = Client(connection)
+        client: Client = Client(uri)
         collections: list[str] = [coll.name for coll in client]
 
         def use(name: str) -> None:
@@ -54,9 +54,10 @@ async def interactive_shell(connection: str) -> None:
             """
             global collection
             collection = client.get_collection(name)  # type: ignore
-            if not collection:  # type: ignore
+            if not collection:
                 print(f"Collection {name} doesn't exist")
-            print(f"Saved {collection.name} to 'collection' variable")  # type: ignore
+            else:
+                print(f"Saved {collection.name} to 'collection' variable")
 
         def get_global_coll_variable() -> Collection:
             """Return 'collection' global variable."""
@@ -81,9 +82,9 @@ def start() -> None:
     elif sys.argv[1].endswith(".py"):
         runpy.run_path(path_name=sys.argv[1])
     else:
-        connection: str = sys.argv[1]
-        validate_uri(connection)
-        asyncio.run(interactive_shell(connection))
+        uri: str = sys.argv[1]
+        validate_uri(uri)
+        asyncio.run(interactive_shell(uri))
 
 
 if __name__ == "__main__":
