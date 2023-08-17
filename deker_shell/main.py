@@ -19,7 +19,7 @@ import datetime  # noqa F401
 import runpy
 import sys
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional  # noqa: I101
 
 import numpy as np  # noqa F401
 
@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 
 collection: Optional[Collection] = None  # default collection variable, set by use("coll_name") method
 client: Optional[Client] = None  # default variable for Client instance
+
 
 async def interactive_shell(uri: str) -> None:
     """Coroutine that starts a Python REPL from which we can access the Deker interface.
