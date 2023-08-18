@@ -14,4 +14,3 @@ jobs:
       package-name: $PACKAGE_NAME
       python-version: '3.9'
       min-coverage: 60
-    command: echo $PACKAGE_NAME
