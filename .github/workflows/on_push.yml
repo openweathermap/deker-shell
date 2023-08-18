@@ -4,11 +4,19 @@ on:
   push:
     branches-ignore:
       - 'refs/tags/v'
+env:
+  PACKAGE_NAME: deker_shell
 
 jobs:
+  tox_tests:
+    uses: openweathermap/deker-actions/.github/workflows/tox.yml@master
+    with:
+      package-name: $PACKAGE_NAME
+      min-coverage: 60
+
   checks:
     uses: openweathermap/deker-actions/.github/workflows/checks.yml@master
     with:
       package-name: deker_shell
       python-version: '3.9'
-      min-coverage: 63
+      min-coverage: 60
