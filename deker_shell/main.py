@@ -19,7 +19,7 @@ import datetime  # noqa F401
 import runpy
 import sys
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional  # noqa: I101
 
 import numpy as np  # noqa F401
 
@@ -35,7 +35,8 @@ from deker_shell.utils import validate_uri
 if TYPE_CHECKING:
     from deker import Client, Collection
 
-collection = None  # default collection variable, set by use("coll_name") method
+collection: Optional[Collection] = None  # default collection variable, set by use("coll_name") method
+client: Optional[Client] = None  # default variable for Client instance
 
 
 async def interactive_shell(uri: str) -> None:
@@ -43,8 +44,9 @@ async def interactive_shell(uri: str) -> None:
 
     :param uri: client uri
     """
+    global client
     try:
-        client: Client = Client(uri)
+        client = Client(uri)
         collections: list[str] = [coll.name for coll in client]
 
         def use(name: str) -> None:
@@ -73,6 +75,13 @@ async def interactive_shell(uri: str) -> None:
     except EOFError:
         # Stop the loop when quitting the repl. (Ctrl-D press.)
         asyncio.get_running_loop().stop()
+    finally:
+        if client is not None:
+            try:
+                client.close()
+                print("Exiting Deker")
+            except Exception:
+                pass
 
 
 def start() -> None:

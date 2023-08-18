@@ -1,23 +1,35 @@
 # Deker Shell
 
-Welcome to Deker interactive shell - REPL interface for Deker.
+Deker Shell is an interactive REPL based management interface for
+[Deker](https://github.com/openweathermap/deker) storage engine.
 
-## Start
-You need Deker and python 3.9 installed
-```
+## Features
+
+* Autocompletion
+* Syntax highlighting
+* `client` and `collections` variables initialized at start
+* Shortcut `use` function to change current `collection`
+* Imported at start: `numpy` as `np`, `datetime` and all `deker` public classes
+* Running `asyncio` loop (thus, enabling you to use `async` and `await`)
+* All the `ptpython` features
+
+## Quick Start
+
+You need Deker and Python 3.9 or later installed:
+
+
+```sh
 pip install deker deker-shell
+```
+
+Then you may run Deker Shell with storage location as a command line parameter:
+
+```sh
 deker file:///tmp/deker
 ```
 
-## Features
-- Syntax highlighting
-- Autocompletion
-- Preset `client` and `collections` variable
-- Default `collection` variable with `use` method
-- Deker and Ptpython features
+Please refer to Deker [documentation](https://docs.deker.io) for more details.
 
-## Documentation
-Check out [Deker documentation](https://docs.deker.io) for more details.
+## Special Thanks
 
-## Special thanks to
-- [Ptpython](https://github.com/prompt-toolkit/ptpython) - advanced Python REPL
+* [ptpython](https://github.com/prompt-toolkit/ptpython) - a better Python REPL
