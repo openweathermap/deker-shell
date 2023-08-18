@@ -11,7 +11,7 @@ class TestStart:
         """Tests if deker_shell starts correctly with correct uri."""
         with patch("sys.argv", ["deker", "file:///tmp/test/"]):
             start()
-            assert capsys.readouterr().out == f"{help_start}\n> >\r\n"
+            assert capsys.readouterr().out == f"{help_start}\n>  >\r\nExiting Deker\n"
 
     def test_start_fail_bad_uri(self, capsys):
         """Tests if deker_shell fails to start if uri is wrong."""

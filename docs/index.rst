@@ -2,7 +2,8 @@
 Deker shell
 ===============
 
-Deker shell provides python REPL interface for Deker, offering features like autocompletion, preset variables, and enhanced REPL functionality through Ptpython.
+Deker shell provides python REPL interface for Deker, offering features like autocompletion,
+preset variables, and enhanced REPL functionality through Ptpython.
 
 Start
 ------------------------
@@ -66,15 +67,24 @@ Preset variables
 Classes
 ------------------------
 - :external+deker:class:`Client <deker.client.Client>` - registry of collections
-- :external+deker:class:`Collection <deker.collection.Collection>` - collection of arrays or varrays
-- :external+deker:class:`Array <deker.arrays.Array>` - array with/without data, can be read through subset: array[:].read()
+- :external+deker:class:`Collection <deker.collection.Collection>` - collection of arrays or
+   varrays
+- :external+deker:class:`Array <deker.arrays.Array>` - array with/without data, can be read
+   through subset: array[:].read()
 - :external+deker:class:`VArray <deker.arrays.VArray>` - virtual array
-- :external+deker:class:`Subset <deker.subset.Subset>` - subset of Array data with set bounds and shape, can read, update and clear the data within the array
-- :external+deker:class:`VSubset <deker.subset.VSubset>` - virtual subset of VArray data with set bounds and shape
-- :external+deker:class:`ArraySchema <deker.schemas.ArraySchema>` - schema with arrays attributes, dimensions and dtype, needed to create collection
-- :external+deker:class:`VArraySchema <deker.schemas.VArraySchema>` - ArraySchema with vgrid: an ordered sequence of positive integers, used for splitting virtual array into ordinary arrays
-- :external+deker:class:`DimensionSchema <deker.schemas.DimensionSchema>` - dimensions (data) schema, you can also use :external+deker:class:`DimensionSchema <deker.schemas.TimeDimensionSchema>`
-- :external+deker:class:`AttributeSchema <deker.schemas.AttributeSchema>` - describes requirements for the primary or custom attribute of Array or VArray
+- :external+deker:class:`Subset <deker.subset.Subset>` - subset of Array data with set bounds
+   and shape, can read, update and clear the data within the array
+- :external+deker:class:`VSubset <deker.subset.VSubset>` - virtual subset of VArray data with
+   set bounds and shape
+- :external+deker:class:`ArraySchema <deker.schemas.ArraySchema>` - schema with arrays
+   attributes, dimensions and dtype, needed to create collection
+- :external+deker:class:`VArraySchema <deker.schemas.VArraySchema>` - ArraySchema with vgrid:
+   an ordered sequence of positive integers, used for splitting virtual array into ordinary arrays
+- :external+deker:class:`DimensionSchema <deker.schemas.DimensionSchema>` - dimensions (data)
+   schema, you can also use :external+deker:class:`DimensionSchema
+   <deker.schemas.TimeDimensionSchema>`
+- :external+deker:class:`AttributeSchema <deker.schemas.AttributeSchema>` - describes
+   requirements for the primary or custom attribute of Array or VArray
 
 Methods
 ------------------------

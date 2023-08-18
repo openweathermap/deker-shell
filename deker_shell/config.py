@@ -32,10 +32,10 @@ def configure(repl: PythonRepl) -> None:
 
     class CustomPrompt(PromptStyle):
         def in_prompt(self) -> AnyFormattedText:
-            return [("class:prompt", ">")]
+            return [("class:prompt", "> ")]
 
         def in2_prompt(self, width: int) -> AnyFormattedText:
-            return [("class:prompt.dots", "...")]
+            return [("class:prompt.dots", ". ")]
 
         def out_prompt(self) -> AnyFormattedText:
             return []

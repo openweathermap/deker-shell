@@ -19,7 +19,7 @@ import datetime  # noqa F401
 import runpy
 import sys
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional  # noqa: I101
 
 import numpy as np  # noqa F401
 
@@ -35,16 +35,18 @@ from deker_shell.utils import validate_uri
 if TYPE_CHECKING:
     from deker import Client, Collection
 
-global collection  # default collection variable, set by use("coll_name") method
+collection: Optional[Collection] = None  # default collection variable, set by use("coll_name") method
+client: Optional[Client] = None  # default variable for Client instance
 
 
-async def interactive_shell(connection: str) -> None:
+async def interactive_shell(uri: str) -> None:
     """Coroutine that starts a Python REPL from which we can access the Deker interface.
 
-    :param connection: client uri
+    :param uri: client uri
     """
+    global client
     try:
-        client: Client = Client(connection)
+        client = Client(uri)
         collections: list[str] = [coll.name for coll in client]
 
         def use(name: str) -> None:
@@ -54,9 +56,10 @@ async def interactive_shell(connection: str) -> None:
             """
             global collection
             collection = client.get_collection(name)  # type: ignore
-            if not collection:  # type: ignore
+            if not collection:
                 print(f"Collection {name} doesn't exist")
-            print(f"Saved {collection.name} to 'collection' variable")  # type: ignore
+            else:
+                print(f"Saved {collection.name} to 'collection' variable")
 
         def get_global_coll_variable() -> Collection:
             """Return 'collection' global variable."""
@@ -72,6 +75,13 @@ async def interactive_shell(connection: str) -> None:
     except EOFError:
         # Stop the loop when quitting the repl. (Ctrl-D press.)
         asyncio.get_running_loop().stop()
+    finally:
+        if client is not None:
+            try:
+                client.close()
+                print("Exiting Deker")
+            except Exception:
+                pass
 
 
 def start() -> None:
@@ -81,9 +91,9 @@ def start() -> None:
     elif sys.argv[1].endswith(".py"):
         runpy.run_path(path_name=sys.argv[1])
     else:
-        connection: str = sys.argv[1]
-        validate_uri(connection)
-        asyncio.run(interactive_shell(connection))
+        uri: str = sys.argv[1]
+        validate_uri(uri)
+        asyncio.run(interactive_shell(uri))
 
 
 if __name__ == "__main__":
