@@ -8,8 +8,6 @@ on:
 jobs:
   checks:
     uses: openweathermap/deker-actions/.github/workflows/checks.yml@master
-    permissions:
-      - secrets: read
     with:
       python-version: '3.9'
       min-coverage: 60
