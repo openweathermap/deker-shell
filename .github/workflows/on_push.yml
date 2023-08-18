@@ -6,6 +6,12 @@ on:
       - 'refs/tags/v'
 
 jobs:
+  tox:
+    uses: openweathermap/deker-actions/.github/workflows/tox.yml@master
+    with:
+      package-name: ${{ vars.PACKAGE_NAME }}
+      min-coverage: 60
+
   checks:
     uses: openweathermap/deker-actions/.github/workflows/checks.yml@master
     with:
