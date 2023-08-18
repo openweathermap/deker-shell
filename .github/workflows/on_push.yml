@@ -9,6 +9,6 @@ jobs:
   checks:
     uses: openweathermap/deker-actions/.github/workflows/checks.yml@master
     with:
-      package-name: $ {{ secrets.PACKAGE_NAME }}
+      package-name: ${{ secrets.PACKAGE_NAME }}
       python-version: '3.9'
       min-coverage: 60
