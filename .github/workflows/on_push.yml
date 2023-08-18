@@ -8,15 +8,10 @@ env:
   PACKAGE_NAME: deker_shell
 
 jobs:
-  tox_tests:
-    uses: openweathermap/deker-actions/.github/workflows/tox.yml@master
-    with:
-      package-name: ${{ env.PACKAGE_NAME }}
-      min-coverage: 60
-
   checks:
     uses: openweathermap/deker-actions/.github/workflows/checks.yml@master
     with:
-      package-name: deker_shell
+      package-name: $PACKAGE_NAME
       python-version: '3.9'
       min-coverage: 60
+    command: echo $PACKAGE_NAME
