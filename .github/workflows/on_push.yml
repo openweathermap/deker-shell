@@ -11,5 +11,4 @@ jobs:
     with:
       python-version: '3.9'
       min-coverage: 60
-    secrets:
-      PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
+    secrets: inherit
