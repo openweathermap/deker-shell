@@ -11,7 +11,7 @@ jobs:
   tox_tests:
     uses: openweathermap/deker-actions/.github/workflows/tox.yml@master
     with:
-      package-name: $PACKAGE_NAME
+      package-name: ${{ env.PACKAGE_NAME }}
       min-coverage: 60
 
   checks:
