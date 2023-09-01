@@ -18,12 +18,13 @@ import asyncio
 import datetime  # noqa F401
 import runpy
 import sys
+from pathlib import Path
 
 from typing import TYPE_CHECKING, Optional, Union, Any  # noqa: I101
 
 import click as click
 import numpy as np  # noqa F401
-from click import Context
+from click import Context, ClickException
 
 from deker import *  # noqa F403
 from ptpython.repl import embed
@@ -70,7 +71,7 @@ async def interactive_shell(uri: str, **kwargs: Any) -> None:
         if client.is_closed:
             sys.exit("Client is closed")
 
-        print(help_start)
+        click.echo(help_start)
         await embed(  # type: ignore
             globals=globals(), locals=locals(), return_asyncio_coroutine=True, patch_stdout=True, configure=configure
         )
@@ -81,28 +82,31 @@ async def interactive_shell(uri: str, **kwargs: Any) -> None:
         if client is not None:
             try:
                 client.close()
-                print("Exiting Deker")
+                click.echo("Exiting Deker")
             except Exception:
                 pass
 
 
 @click.command(context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
 @click.argument("uri", required=True, type=str)
-@click.option("--workers", type=int, help="Number of threads for Deker.")
+@click.option("-w", "--workers", type=int, help="Number of threads for Deker.")
 @click.option(
+    "-t",
     "--write-lock-timeout",
     type=int,
     help="An amount of seconds " "during which a parallel writing process " "waits for release of the locked file.",
 )
 @click.option(
+    "-c",
     "--write-lock-check-interval",
     type=int,
     help="An amount of time (in seconds) "
     "during which a parallel writing process "
     "sleeps between checks for locks.",
 )
-@click.option("--loglevel", type=str, help="Level of Deker loggers.")
+@click.option("-l", "--loglevel", type=str, help="Level of Deker loggers.")
 @click.option(
+    "-m",
     "--memory-limit",
     type=str,
     help="Limit of memory allocation per one array/subset in bytes "
@@ -138,6 +142,9 @@ def start(
       .. note:: This parameter is used for early runtime break in case of potential memory overflow
     """
     if uri.endswith(".py"):
+        path = Path(uri)
+        if not path.exists():
+            raise ClickException("File does not exist")
         runpy.run_path(path_name=uri)
     else:
         validate_uri(uri)
@@ -158,13 +165,14 @@ def start(
         # extra parameters
         if ctx.args:
             for i in range(0, len(ctx.args), 2):
+                key = ctx.args[i].replace("-", "")
                 value = ctx.args[i + 1]
                 if "." in ctx.args[i]:
-                    kwargs_key, inner_key = ctx.args[i].split(".")
-                    kwargs[kwargs_key[2:]] = {}
-                    kwargs[kwargs_key[2:]][inner_key] = value
+                    kwargs_key, inner_key = key.split(".", 1)
+                    kwargs[kwargs_key] = {}
+                    kwargs[kwargs_key][inner_key] = value
                 else:
-                    kwargs[ctx.args[i][2:]] = value
+                    kwargs[key] = value
 
         asyncio.run(interactive_shell(uri, **kwargs))
 
