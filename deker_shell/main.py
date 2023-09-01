@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING, Optional, Union, Any  # noqa: I101
 
 import click as click
 import numpy as np  # noqa F401
+from click import Context
 
 from deker import *  # noqa F403
 from ptpython.repl import embed
@@ -32,7 +33,6 @@ from deker_shell.consts import help_start
 from deker_shell.help import help  # noqa F401
 from deker_shell.utils import validate_uri
 
-
 if TYPE_CHECKING:
     from deker import Client, Collection
 
@@ -40,10 +40,7 @@ collection: Optional[Collection] = None  # default collection variable, set by u
 client: Optional[Client] = None  # default variable for Client instance
 
 
-async def interactive_shell(
-    uri: str,
-    **kwargs: Any
-) -> None:
+async def interactive_shell(uri: str, **kwargs: Any) -> None:
     """Coroutine that starts a Python REPL from which we can access the Deker interface.
 
     :param uri: uri to Deker storage
@@ -51,10 +48,7 @@ async def interactive_shell(
     """
     global client
     try:
-        client = Client(
-            uri,
-            **kwargs
-        )
+        client = Client(uri, **kwargs)
         collections: list[str] = [coll.name for coll in client]
 
         def use(name: str) -> None:
@@ -93,23 +87,56 @@ async def interactive_shell(
 
 
 @click.command(context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
-@click.argument('uri', required=True, type=str)
-@click.option('--workers', type=int, help='Number of threads for Deker.')
-@click.option('--write-lock-timeout', type=int, help='An amount of seconds during which a parallel writing process waits for release of the locked file.')
-@click.option('--write-lock-check-interval', type=int, help='An amount of time (in seconds) during which a parallel writing process sleeps between checks for locks.')
-@click.option('--loglevel', type=str, help='Level of Deker loggers.')
-@click.option('--memory-limit', type=str, help='Limit of memory allocation per one array/subset in bytes or in human representation of kilobytes, megabytes or gigabytes, e.g. "100K", "512M", "4G". Human representations will be converted into bytes. If result is <= 0, total RAM + total swap is used.')
+@click.argument("uri", required=True, type=str)
+@click.option("--workers", type=int, help="Number of threads for Deker.")
+@click.option(
+    "--write-lock-timeout",
+    type=int,
+    help="An amount of seconds " "during which a parallel writing process " "waits for release of the locked file.",
+)
+@click.option(
+    "--write-lock-check-interval",
+    type=int,
+    help="An amount of time (in seconds) "
+    "during which a parallel writing process "
+    "sleeps between checks for locks.",
+)
+@click.option("--loglevel", type=str, help="Level of Deker loggers.")
+@click.option(
+    "--memory-limit",
+    type=str,
+    help="Limit of memory allocation per one array/subset in bytes "
+    "or in human representation of kilobytes, megabytes or gigabytes,"
+    " e.g. '100K', '512M', '4G'."
+    " Human representations will be converted into bytes. "
+    "If result is <= 0, total RAM + total swap is used.",
+)
 @click.pass_context
 def start(
-    ctx,
+    ctx: Context,
     uri: str,
     workers: Optional[int] = None,
     write_lock_timeout: Optional[int] = None,
     write_lock_check_interval: Optional[int] = None,
     loglevel: Optional[str] = None,
-    memory_limit: Optional[Union[int, str]] = None
+    memory_limit: Optional[Union[int, str]] = None,
 ) -> None:
-    """Application entrypoint."""
+    """Application entrypoint.
+
+    :param ctx: click Context with extra parameters (kwargs)
+    :param uri: uri to Deker storage
+    :param workers: number of threads for Deker
+    :param write_lock_timeout: An amount of seconds during which a parallel writing process waits for release
+      of the locked file
+    :param write_lock_check_interval: An amount of time (in seconds) during which a parallel writing process sleeps
+      between checks for locks
+    :param loglevel: Level of Deker loggers
+    :param memory_limit: Limit of memory allocation per one array/subset in bytes or in human representation of
+      kilobytes, megabytes or gigabytes, e.g. ``"100K"``, ``"512M"``, ``"4G"``. Human representations will be
+      converted into bytes. If result is ``<= 0`` - total RAM + total swap is used
+
+      .. note:: This parameter is used for early runtime break in case of potential memory overflow
+    """
     if uri.endswith(".py"):
         runpy.run_path(path_name=uri)
     else:
@@ -121,7 +148,7 @@ def start(
             "write_lock_timeout": write_lock_timeout,
             "write_lock_check_interval": write_lock_check_interval,
             "loglevel": loglevel,
-            "memory_limit": memory_limit
+            "memory_limit": memory_limit,
         }
         default_keys = tuple(kwargs.keys())
         for key in default_keys:
@@ -139,10 +166,7 @@ def start(
                 else:
                     kwargs[ctx.args[i][2:]] = value
 
-        asyncio.run(interactive_shell(
-            uri,
-            **kwargs
-        ))
+        asyncio.run(interactive_shell(uri, **kwargs))
 
 
 if __name__ == "__main__":
