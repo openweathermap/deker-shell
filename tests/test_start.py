@@ -6,8 +6,15 @@ from click.testing import CliRunner
 from deker_shell.consts import help_start
 from deker_shell.main import start
 
-
 runner = CliRunner()
+
+
+@pytest.fixture()
+def test_file():
+    path = "file.py"
+    with open(path, "w") as file:
+        yield file
+    os.remove(path)
 
 
 class TestStart:
@@ -27,9 +34,9 @@ class TestStart:
         """Tests if deker_shell fails to start if no args given."""
         result = runner.invoke(start, [])
         assert result.exit_code == 2
-        assert result.output == "Usage: start [OPTIONS] URI\n"\
-                                "Try 'start --help' for help.\n"\
-                                "\n"\
+        assert result.output == "Usage: start [OPTIONS] URI\n" \
+                                "Try 'start --help' for help.\n" \
+                                "\n" \
                                 "Error: Missing argument 'URI'.\n"
 
     @pytest.mark.parametrize(
@@ -62,11 +69,9 @@ class TestStart:
         result = runner.invoke(start, ["file:///tmp/deker", "--key.inner_key", "test", "-k", "t"])
         assert result.exit_code == 0
 
-    def test_start_with_py_file(self):
-        open("file.py", "w")
+    def test_start_with_py_file(self, test_file):
         result = runner.invoke(start, ["file.py"])
         assert result.exit_code == 0
-        os.remove("file.py")
 
     def test_start_with_py_file_fail(self):
         result = runner.invoke(start, ["no_file.py"])
