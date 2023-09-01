@@ -22,7 +22,6 @@ import sys
 from typing import TYPE_CHECKING, Optional, Union, Any  # noqa: I101
 
 import click as click
-import deker
 import numpy as np  # noqa F401
 
 from deker import *  # noqa F403
