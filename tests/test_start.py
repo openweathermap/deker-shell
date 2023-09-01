@@ -9,14 +9,6 @@ from deker_shell.main import start
 runner = CliRunner()
 
 
-@pytest.fixture()
-def test_file():
-    path = "file.py"
-    with open(path, "w") as file:
-        yield file
-    os.remove(path)
-
-
 class TestStart:
     def test_start_correct(self):
         """Tests if deker_shell starts correctly with correct uri."""
@@ -69,8 +61,8 @@ class TestStart:
         result = runner.invoke(start, ["file:///tmp/deker", "--key.inner_key", "test", "-k", "t"])
         assert result.exit_code == 0
 
-    def test_start_with_py_file(self, test_file):
-        result = runner.invoke(start, ["file.py"])
+    def test_start_with_py_file(self):
+        result = runner.invoke(start, ["__init__.py"])
         assert result.exit_code == 0
 
     def test_start_with_py_file_fail(self):
