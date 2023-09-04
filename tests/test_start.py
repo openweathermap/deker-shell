@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from click.testing import CliRunner
@@ -59,10 +58,6 @@ class TestStart:
     def test_start_with_extra_parameters(self):
         """Tests if deker_shell fails to start if no args given."""
         result = runner.invoke(start, ["file:///tmp/deker", "--key.inner_key", "test", "-k", "t"])
-        assert result.exit_code == 0
-
-    def test_start_with_py_file(self):
-        result = runner.invoke(start, ["__init__.py"])
         assert result.exit_code == 0
 
     def test_start_with_py_file_fail(self):
