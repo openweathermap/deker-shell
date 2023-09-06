@@ -16,6 +16,8 @@
 
 from urllib.parse import urlparse
 
+from click import ClickException
+
 
 def validate_uri(uri: str) -> None:
     """Validate uri.
@@ -24,4 +26,4 @@ def validate_uri(uri: str) -> None:
     """
     uri_scheme = urlparse(uri).scheme
     if uri_scheme not in ("http", "file"):
-        raise ValueError("Invalid uri")
+        raise ClickException("Invalid uri")
