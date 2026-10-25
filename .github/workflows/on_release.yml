@@ -7,15 +7,16 @@ on:
 
 jobs:
   tox_tests:
-    uses: openweathermap/deker-actions/.github/workflows/tox.yml@master
+    uses: openweathermap/deker-actions/.github/workflows/tox.yml@feature/python-versions-input
     with:
       package-name: ${{ vars.PACKAGE_NAME }}
       min-coverage: 60
+      python-versions: '["3.10", "3.11", "3.12", "3.13", "3.14"]'
 
   build_sdist:
     needs: tox_tests
     name: Build source distribution
-    uses: openweathermap/deker-actions/.github/workflows/build.yml@master
+    uses: openweathermap/deker-actions/.github/workflows/build.yml@feature/python-versions-input
 
   upload_pypi:
     name: Publish source distribution
@@ -28,7 +29,7 @@ jobs:
       url: https://pypi.org/p/${{ vars.PACKAGE_NAME }}
 
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           # unpacks default artifact into dist/
           # if `name: artifact` is omitted, the action will create extra parent dir
