@@ -7,7 +7,7 @@ preset variables, and enhanced REPL functionality through Ptpython.
 
 Start
 ------------------------
-You need Deker and python 3.9 installed
+You need Deker and Python 3.10 or later installed
 
 .. code-block:: bash
 

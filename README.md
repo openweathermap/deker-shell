@@ -15,7 +15,7 @@ Deker Shell is an interactive REPL based management interface for
 
 ## Quick Start
 
-You need Deker and Python 3.9 or later installed:
+You need Deker and Python 3.10 or later installed:
 
 
 ```sh
