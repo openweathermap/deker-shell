@@ -28,6 +28,16 @@ Then you may run Deker Shell with storage location as a command line parameter:
 deker file:///tmp/deker
 ```
 
+To work with a Deker server (`http://` or `https://` uri) install the server adapters as well:
+
+```sh
+pip install deker deker-server-adapters deker-shell
+deker https://user:password@deker.example.com
+```
+
+The command history is kept between sessions in `~/.deker_shell_history`, the oldest commands
+are dropped past 1000 entries; see `--history-file` and `--history-size` in `deker --help`.
+
 Please refer to Deker [documentation](https://docs.deker.io) for more details.
 
 ## Special Thanks
