@@ -182,7 +182,8 @@ disallow_untyped_defs = false
 # I      - isort                (isort + flake8-import-order)
 # N      - pep8-naming
 # PT     - flake8-pytest-style
-select = ["E", "W", "F", "C90", "B", "D", "I", "N", "PT"]
+# TID251 - flake8-tidy-imports banned-api: no `from __future__ import annotations`
+select = ["E", "W", "F", "C90", "B", "D", "I", "N", "PT", "TID251"]
 ignore = [
     "B9",  # flake8-bugbear "opinionated" rules: opt-in in flake8, were never enabled
     "B012",
@@ -197,6 +198,9 @@ ignore = [
     "N807",
     "N813",
 ]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"__future__.annotations".msg = "from __future__ import annotations is forbidden here: annotations must stay real objects"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = [
