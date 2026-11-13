@@ -93,6 +93,7 @@ dev = [
     "pytest-random-order>=1.2.0",
     "pytest-mock>=3.17.0",
     "deker>=1.2.0b1,<2",
+    "deker-server-adapters>=1.2.0",
 ]
 docs = [
     "docutils>=0.21.2",
