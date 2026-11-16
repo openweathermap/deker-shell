@@ -22,6 +22,11 @@ def test_configure_wires_completion_and_history(tmp_path: Path):
     repl = MagicMock(all_prompt_styles={})
     configure(repl, history_file=tmp_path / "history", history_size=10)
     assert isinstance(repl.completer, DekerCompleter)
+    # the dictionary completion flag is read from the repl at every call, not copied once
+    repl.enable_dictionary_completion = True
+    assert repl.completer._python_completer.enable_dictionary_completion() is True
+    repl.enable_dictionary_completion = False
+    assert repl.completer._python_completer.enable_dictionary_completion() is False
     assert repl.enable_fuzzy_completion is True
     assert repl.enable_history_search is True
     # the same bounded history serves the input buffer and the F3 browser

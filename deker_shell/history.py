@@ -32,12 +32,15 @@ class BoundedFileHistory(FileHistory):
     by a blank line. The file is rewritten with the newest ``max_entries`` blocks when it grows
     past ``max_entries + HISTORY_TRIM_SLACK`` commands and when it is loaded longer than the limit,
     so lowering the limit takes effect at the next start.
-
-    :param filename: path to the history file; its directory is created if missing
-    :param max_entries: commands to keep
     """
 
     def __init__(self, filename: Path, max_entries: int) -> None:
+        """BoundedFileHistory constructor: creates the directory of the file if it is missing.
+
+        :param filename: path to the history file; its directory is created if missing
+        :param max_entries: commands to keep
+        :raises ValueError: if ``max_entries`` is not positive
+        """
         if max_entries < 1:
             raise ValueError(f"max_entries must be positive, got {max_entries}")
         filename.parent.mkdir(parents=True, exist_ok=True)

@@ -50,12 +50,12 @@ def parse_extra_value(value: str) -> Any:
 
 
 async def interactive_shell(uri: str, history_file: Path, history_size: int, **kwargs: Any) -> None:
-    """Coroutine that starts a Python REPL from which we can access the Deker interface.
+    r"""Coroutine that starts a Python REPL from which we can access the Deker interface.
 
     :param uri: uri to Deker storage
     :param history_file: where the command history is kept between sessions
     :param history_size: commands kept in the history file
-    :param **kwargs: Client parameters
+    :param \**kwargs: Client parameters
     """
     client = Client(uri, **kwargs)
     namespace.client = client
