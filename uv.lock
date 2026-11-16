@@ -687,8 +687,7 @@ wheels = [
 
 [[package]]
 name = "deker"
-version = "1.2.0"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../deker" }
 dependencies = [
     { name = "attrs" },
     { name = "deker-local-adapters" },
@@ -696,12 +695,54 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/59/02/5c0a54d3ba2c022e748c4263affabc54a33b7ff88f43e6c9465a4610e9c0/deker-1.2.0.tar.gz", hash = "sha256:20bcd229e1ad49f35d6871c9e8fb39fba549328f28dc75a04b41c8c7022d77b4", size = 78713, upload-time = "2026-11-11T15:11:21.185Z" }
+
+[package.metadata]
+requires-dist = [
+    { name = "attrs", specifier = ">=23.1.0,<27" },
+    { name = "deker-local-adapters", editable = "../deker-local-adapters" },
+    { name = "deker-server-adapters", marker = "extra == 'all'", editable = "../deker-server-adapters" },
+    { name = "deker-server-adapters", marker = "extra == 'server-adapters'", editable = "../deker-server-adapters" },
+    { name = "deker-shell", marker = "extra == 'all'", specifier = ">=1.2.0,<2" },
+    { name = "deker-shell", marker = "extra == 'shell'", specifier = ">=1.2.0,<2" },
+    { name = "psutil", specifier = ">=5.9.5,<8" },
+    { name = "tqdm", specifier = ">=4.64.1,<5" },
+    { name = "typing-extensions", specifier = ">=4.4.0,<5" },
+    { name = "xarray", marker = "extra == 'all'", specifier = ">=2024.6.0" },
+    { name = "xarray", marker = "extra == 'xarray'", specifier = ">=2024.6.0" },
+]
+provides-extras = ["all", "server-adapters", "shell", "xarray"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "bandit", specifier = ">=1.9.4" },
+    { name = "coverage", specifier = ">=7.16.2" },
+    { name = "mypy", specifier = ">=2.4.0" },
+    { name = "mypy-extensions", specifier = ">=1.1.0" },
+    { name = "pre-commit", specifier = ">=4.6.2" },
+    { name = "pydoclint", specifier = ">=0.6.0" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "pytest-mock", specifier = ">=3.17.0" },
+    { name = "pytest-random-order", specifier = ">=1.2.0" },
+    { name = "pytest-sugar", specifier = ">=1.1.1" },
+    { name = "pytest-timeout", specifier = ">=2.4.0" },
+    { name = "pyupgrade", specifier = ">=3.19.0" },
+    { name = "ruff", specifier = ">=0.17.2" },
+    { name = "ssort", specifier = ">=0.17.0" },
+    { name = "xarray", specifier = ">=2024.6.0" },
+]
+docs = [
+    { name = "doc8", specifier = ">=2.0.0" },
+    { name = "docutils", specifier = ">=0.21.2" },
+    { name = "enum-tools", specifier = ">=0.13.0" },
+    { name = "m2r2", specifier = ">=2.1.0" },
+    { name = "sphinx-rtd-theme", specifier = ">=3.1.0" },
+    { name = "sphinx-toolbox", specifier = ">=4.3.1" },
+]
 
 [[package]]
 name = "deker-local-adapters"
-version = "1.2.0"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../deker-local-adapters" }
 dependencies = [
     { name = "deker-tools" },
     { name = "h5py" },
@@ -710,16 +751,79 @@ dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c2/ce/1a7d0fc16df1e511a41d91ed6e4d1faf8a48b34d1e34526a554228501675/deker_local_adapters-1.2.0.tar.gz", hash = "sha256:75104681d334a0fdf35173c2667efcb6315059cc0962db61771c231e1de68c58", size = 26388, upload-time = "2026-11-11T11:32:54.977Z" }
+
+[package.metadata]
+requires-dist = [
+    { name = "deker-tools", editable = "../deker-tools" },
+    { name = "h5py", specifier = ">=3.11,<4" },
+    { name = "hdf5plugin", specifier = ">=4.0.1,<8" },
+    { name = "numpy", specifier = ">=1.26,<3" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "bandit", specifier = ">=1.9.4" },
+    { name = "coverage", specifier = ">=7.16.2" },
+    { name = "deker", editable = "../deker" },
+    { name = "mypy", specifier = ">=2.4.0" },
+    { name = "mypy-extensions", specifier = ">=1.1.0" },
+    { name = "pre-commit", specifier = ">=4.6.2" },
+    { name = "pydoclint", specifier = ">=0.6.0" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "pytest-mock", specifier = ">=3.17.0" },
+    { name = "pytest-random-order", specifier = ">=1.2.0" },
+    { name = "pytest-sugar", specifier = ">=1.1.1" },
+    { name = "pytest-timeout", specifier = ">=2.4.0" },
+    { name = "pyupgrade", specifier = ">=3.19.0" },
+    { name = "ruff", specifier = ">=0.17.2" },
+    { name = "ssort", specifier = ">=0.17.0" },
+]
+docs = [
+    { name = "doc8", specifier = ">=2.0.0" },
+    { name = "docutils", specifier = ">=0.21.2" },
+    { name = "enum-tools", specifier = ">=0.13.0" },
+    { name = "m2r2", specifier = ">=2.1.0" },
+    { name = "sphinx-rtd-theme", specifier = ">=3.1.0" },
+    { name = "sphinx-toolbox", specifier = ">=4.3.1" },
+]
 
 [[package]]
 name = "deker-server-adapters"
-version = "1.2.0"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../deker-server-adapters" }
 dependencies = [
     { name = "httpx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cc/90/a815d92daa7fbb0445543577865fe4cff34437f9f1b7afc651661c9b11ad/deker_server_adapters-1.2.0.tar.gz", hash = "sha256:9582b341c5e89d86a90031680f21e59c0b296a3d86e45ef93a0f13b0ca5ebde5", size = 27876, upload-time = "2026-11-11T11:11:15.792Z" }
+
+[package.metadata]
+requires-dist = [{ name = "httpx", specifier = ">=0.28.1,<1" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "coverage", specifier = ">=7.16.2" },
+    { name = "deker", editable = "../deker" },
+    { name = "mypy", specifier = ">=2.4.0" },
+    { name = "mypy-extensions", specifier = ">=1.1.0" },
+    { name = "pre-commit", specifier = ">=4.6.2" },
+    { name = "pydoclint", specifier = ">=0.6.0" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "pytest-httpx", specifier = ">=0.36.2" },
+    { name = "pytest-mock", specifier = ">=3.17.0" },
+    { name = "pytest-random-order", specifier = ">=1.2.0" },
+    { name = "pytest-sugar", specifier = ">=1.1.1" },
+    { name = "pyupgrade", specifier = ">=3.19.0" },
+    { name = "ruff", specifier = ">=0.17.2" },
+    { name = "ssort", specifier = ">=0.17.0" },
+]
+docs = [
+    { name = "doc8", specifier = ">=2.0.0" },
+    { name = "docutils", specifier = ">=0.21.2" },
+    { name = "enum-tools", specifier = ">=0.13.0" },
+    { name = "m2r2", specifier = ">=2.1.0" },
+    { name = "sphinx-rtd-theme", specifier = ">=3.1.0" },
+    { name = "sphinx-toolbox", specifier = ">=4.3.1" },
+]
 
 [[package]]
 name = "deker-shell"
@@ -771,8 +875,8 @@ requires-dist = [
 dev = [
     { name = "bandit", specifier = ">=1.9.4" },
     { name = "coverage", specifier = ">=7.16.2" },
-    { name = "deker", specifier = ">=1.2.0b1,<2" },
-    { name = "deker-server-adapters", specifier = ">=1.2.0" },
+    { name = "deker", editable = "../deker" },
+    { name = "deker-server-adapters", editable = "../deker-server-adapters" },
     { name = "mypy", specifier = ">=2.4.0" },
     { name = "mypy-extensions", specifier = ">=1.1.0" },
     { name = "pre-commit", specifier = ">=4.6.2" },
@@ -797,14 +901,42 @@ docs = [
 
 [[package]]
 name = "deker-tools"
-version = "1.2.0"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../deker-tools" }
 dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3f/e7/bbb1cb4d71480571dca665b1708e0380b7991d8d0aacc47a7dfce63ffed3/deker_tools-1.2.0.tar.gz", hash = "sha256:b8527ffdac2670cb51d2add439233c1f127b78256a6e7895612509f92c5c84c4", size = 21235, upload-time = "2026-11-11T11:13:37.565Z" }
+
+[package.metadata]
+requires-dist = [{ name = "numpy", specifier = ">=1.26,<3" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "bandit", specifier = ">=1.9.4" },
+    { name = "coverage", specifier = ">=7.16.2" },
+    { name = "mypy", specifier = ">=2.4.0" },
+    { name = "mypy-extensions", specifier = ">=1.1.0" },
+    { name = "pre-commit", specifier = ">=4.6.2" },
+    { name = "pydoclint", specifier = ">=0.6.0" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "pytest-mock", specifier = ">=3.17.0" },
+    { name = "pytest-random-order", specifier = ">=1.2.0" },
+    { name = "pytest-sugar", specifier = ">=1.1.1" },
+    { name = "pyupgrade", specifier = ">=3.19.0" },
+    { name = "ruff", specifier = ">=0.17.2" },
+    { name = "ssort", specifier = ">=0.17.0" },
+    { name = "types-psutil", specifier = ">=7.2.2.20261111" },
+]
+docs = [
+    { name = "doc8", specifier = ">=2.0.0" },
+    { name = "docutils", specifier = ">=0.21.2" },
+    { name = "enum-tools", specifier = ">=0.13.0" },
+    { name = "m2r2", specifier = ">=2.1.0" },
+    { name = "sphinx-rtd-theme", specifier = ">=3.1.0" },
+    { name = "sphinx-toolbox", specifier = ">=4.3.1" },
+]
 
 [[package]]
 name = "dict2css"
