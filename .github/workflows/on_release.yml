@@ -6,21 +6,21 @@ on:
       - 'v[1-9]+.[0-9]+.[0-9]+'
 
 jobs:
-  tox_tests:
-    uses: openweathermap/deker-actions/.github/workflows/tox.yml@master
+  tests:
+    uses: openweathermap/deker-actions/.github/workflows/tox.yml@feature/v2.0.0
     with:
-      package-name: ${{ vars.PACKAGE_NAME }}
-      min-coverage: 60
       python-versions: '["3.10", "3.11", "3.12", "3.13", "3.14"]'
+      numpy-floors: '[{"python": "3.10", "numpy": "1.26.4"}, {"python": "3.11", "numpy": "1.26.4"}, {"python": "3.12", "numpy": "1.26.4"}, {"python": "3.13", "numpy": "2.1.0"}, {"python": "3.14", "numpy": "2.3.2"}]'
+      siblings: '["deker", "deker-local-adapters", "deker-server-adapters", "deker-tools"]'
 
-  build_sdist:
-    needs: tox_tests
-    name: Build source distribution
-    uses: openweathermap/deker-actions/.github/workflows/build.yml@master
+  build:
+    needs: tests
+    name: Build the distributions
+    uses: openweathermap/deker-actions/.github/workflows/build.yml@feature/v2.0.0
 
   upload_pypi:
-    name: Publish source distribution
-    needs: build_sdist
+    name: Publish the distributions
+    needs: build
     runs-on: ubuntu-24.04
     permissions:
       id-token: write
@@ -36,5 +36,5 @@ jobs:
           name: artifact
           path: dist
 
-      - name: Publish package distributions to PyPI
+      - name: Publish the distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

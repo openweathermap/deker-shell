@@ -9,7 +9,6 @@
 import os
 import sys
 
-
 project = "Deker shell"
 copyright = "2023-2026, OpenWeather"
 author = "OpenWeather"
@@ -108,5 +107,5 @@ autodoc_default_options = {
 }
 
 intersphinx_mapping = {
-    "deker": ("http://de1.owm.io:10000", None),
+    "deker": ("https://docs.deker.io", None),
 }

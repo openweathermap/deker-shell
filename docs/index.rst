@@ -13,6 +13,7 @@ You need Deker and Python 3.10 or later installed
 
     pip install deker-shell
     deker file://<path-to-your-deker-storage>
+    deker https://<user>:<password>@<deker-server>  # needs deker-server-adapters
 
 Features
 ------------------------
