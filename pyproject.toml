@@ -95,8 +95,8 @@ dev = [
     "pytest-sugar>=1.1.1",
     "pytest-random-order>=1.2.0",
     "pytest-mock>=3.17.0",
-    "deker>=1.2.0b1,<2",
-    "deker-server-adapters>=1.2.0",
+    "deker>=2.0.0b0,<3",
+    "deker-server-adapters>=2.0.0b0,<3",
 ]
 docs = [
     "docutils>=0.21.2",
