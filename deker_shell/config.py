@@ -1,5 +1,5 @@
 # deker-shell - interactive management shell for deker
-# Copyright (C) 2023  OpenWeather
+# Copyright (C) 2023-2026  Openweather Ltd.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ from ptpython.prompt_style import PromptStyle
 from ptpython.repl import PythonRepl
 
 from deker_shell.completer import DekerCompleter
-from deker_shell.history import BoundedFileHistory
+from deker_shell.history import BoundedFileHistory, insert_in_selection_order
 
 
 class DekerPrompt(PromptStyle):
@@ -77,5 +77,6 @@ def configure(repl: PythonRepl, history_file: Path, history_size: int) -> None:
     history = ThreadedHistory(BoundedFileHistory(history_file, history_size))
     repl.history = history
     repl.default_buffer.history = history
+    insert_in_selection_order()
 
     repl.use_code_colorscheme("zenburn")

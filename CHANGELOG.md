@@ -17,6 +17,8 @@ Released together with DEKER™ 2.0.0.
 - The command history is kept between the sessions: `--history-file` and `--history-size` set
   the file and its limit; the history is searched with the arrow keys and completed fuzzily.
 - `use(` completes the names of the collections; the private names are hidden until `_` is typed.
+- `--debug`: the same as `-l DEBUG`, the DEBUG level of the loggers and the full traceback of an
+  error at the start.
 
 ### Changed
 
@@ -24,6 +26,13 @@ Released together with DEKER™ 2.0.0.
   settings.
 - The namespace of the REPL lives in a module of its own.
 - The command line options do not overwrite each other.
+- The history browser (F3) inserts the chosen lines in the order they were chosen, not in the
+  order of the history, and the preview on the right shows that order.
+- A client that cannot be opened (a wrong address, a server that does not answer) is reported in
+  one line with the reason and the exit code 1 instead of a wall of tracebacks; the traceback is
+  printed with `-l DEBUG` or `--debug`.
+- An unknown option without a value, an unknown option before the URI and a stray argument are
+  reported as usage errors instead of an `IndexError` or a wrong address.
 
 ### Internals and tooling
 

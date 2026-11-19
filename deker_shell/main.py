@@ -1,5 +1,5 @@
 # deker-shell - interactive management shell for deker
-# Copyright (C) 2023  OpenWeather
+# Copyright (C) 2023-2026  Openweather Ltd.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,8 +25,9 @@ from typing import Any
 
 import click as click
 
-from click import ClickException, Context
+from click import ClickException, Context, UsageError
 from deker import Client
+from deker.errors import DekerClientError
 from ptpython.repl import embed
 
 from deker_shell import namespace
@@ -47,6 +48,33 @@ def parse_extra_value(value: str) -> Any:
         return literal_eval(value)
     except (ValueError, SyntaxError):
         return value
+
+
+def parse_extra_args(args: list[str]) -> dict[str, Any]:
+    """Turn the unknown command line options into keyword arguments of the Deker client.
+
+    Every option needs a value: ``--timeout 10`` -> ``{"timeout": 10}``; dotted options are grouped:
+    ``--httpx_conf.timeout 10 --httpx_conf.http2 True`` -> ``{"httpx_conf": {"timeout": 10, "http2": True}}``.
+
+    :param args: the command line left after the known options were taken
+    :returns: keyword arguments for the client
+    :raises UsageError: if an option has no value or an argument is not an option
+    """
+    kwargs: dict[str, Any] = {}
+    for i in range(0, len(args), 2):
+        option = args[i]
+        if not option.startswith("-"):
+            raise UsageError(f"Got unexpected extra argument ({option})")
+        if i + 1 == len(args):
+            raise UsageError(f"Option '{option}' requires a value.")
+        key = option.replace("-", "")
+        value = parse_extra_value(args[i + 1])
+        if "." in key:
+            kwargs_key, inner_key = key.split(".", 1)
+            kwargs.setdefault(kwargs_key, {})[inner_key] = value
+        else:
+            kwargs[key] = value
+    return kwargs
 
 
 async def interactive_shell(uri: str, history_file: Path, history_size: int, **kwargs: Any) -> None:
@@ -105,6 +133,11 @@ async def interactive_shell(uri: str, history_file: Path, history_size: int, **k
 )
 @click.option("-l", "--loglevel", type=str, help="Level of Deker loggers.")
 @click.option(
+    "--debug",
+    is_flag=True,
+    help="The same as -l DEBUG: the DEBUG level of the Deker loggers and the full traceback of an error at the start.",
+)
+@click.option(
     "-m",
     "--memory-limit",
     type=str,
@@ -138,6 +171,7 @@ def start(
     write_lock_timeout: int | None = None,
     write_lock_check_interval: int | None = None,
     loglevel: str | None = None,
+    debug: bool = False,
     memory_limit: int | str | None = None,
 ) -> None:
     """Application entrypoint.
@@ -152,11 +186,15 @@ def start(
     :param write_lock_check_interval: An amount of time (in seconds) during which a parallel writing process sleeps
       between checks for locks
     :param loglevel: Level of Deker loggers
+    :param debug: the same as ``loglevel="DEBUG"``; wins over ``loglevel``
     :param memory_limit: Limit of memory allocation per one array/subset in bytes or in human representation of
       kilobytes, megabytes or gigabytes, e.g. ``"100K"``, ``"512M"``, ``"4G"``. Human representations will be
       converted into bytes. If result is ``<= 0`` - total RAM + total swap is used
 
       .. note:: This parameter is used for early runtime break in case of potential memory overflow
+    :raises ClickException: if the script file does not exist or the Deker client cannot be opened; the traceback
+      of the client is shown only at ``-l DEBUG`` or ``--debug``
+    :raises UsageError: if an unknown option stands before the uri
     """
     if uri.endswith(".py"):
         path = Path(uri)
@@ -164,7 +202,11 @@ def start(
             raise ClickException("File does not exist")
         runpy.run_path(path_name=uri)
     else:
+        if uri.startswith("-"):
+            raise UsageError(f"Unknown option '{uri}' must come after URI, together with its value.")
         validate_uri(uri)
+        if debug:
+            loglevel = "DEBUG"
 
         # deker client default parameters
         kwargs: dict[str, Any] = {
@@ -179,19 +221,14 @@ def start(
             if not kwargs.get(key):
                 kwargs.pop(key, None)
 
-        # extra parameters
-        if ctx.args:
-            for i in range(0, len(ctx.args), 2):
-                key = ctx.args[i].replace("-", "")
-                value = parse_extra_value(ctx.args[i + 1])
-                if "." in ctx.args[i]:
-                    # ``--conf.timeout 10 --conf.http2 1`` -> {"conf": {"timeout": "10", "http2": "1"}}
-                    kwargs_key, inner_key = key.split(".", 1)
-                    kwargs.setdefault(kwargs_key, {})[inner_key] = value
-                else:
-                    kwargs[key] = value
+        kwargs.update(parse_extra_args(ctx.args))
 
-        asyncio.run(interactive_shell(uri, history_file, history_size, **kwargs))
+        try:
+            asyncio.run(interactive_shell(uri, history_file, history_size, **kwargs))
+        except DekerClientError as e:
+            if str(kwargs.get("loglevel", "")).upper() == "DEBUG":
+                raise  # the whole traceback is wanted
+            raise ClickException(str(e)) from e
 
 
 if __name__ == "__main__":

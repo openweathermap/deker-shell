@@ -1,5 +1,5 @@
 # deker-shell - interactive Python shell for deker
-# Copyright (C) 2023  OpenWeather
+# Copyright (C) 2023-2026  Openweather Ltd.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,12 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+"""The command history of the shell: the file keeping it between the sessions and the browser of ptpython (F3).
+
+ptpython keeps the chosen lines in a ``set`` and asks ``sorted()`` for their order in every place that
+needs it: the preview on the right, the inserted text, the cursor synchronisation between the panes and
+the removal of a line from the preview. So the lines are always inserted in the order of the history,
+whatever the order they were chosen in. Here the set is replaced with one that remembers the order of
+choosing, and ``sorted`` of the module with a function answering that order, so every place agrees.
+"""
+
 import os
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from pathlib import Path
 
-from prompt_toolkit.history import FileHistory
+from prompt_toolkit.document import Document
+from prompt_toolkit.history import FileHistory, History
+from ptpython import history_browser
+from ptpython.history_browser import HistoryMapping, PythonHistory
 
 from deker_shell.consts import HISTORY_TRIM_SLACK
 
@@ -106,3 +118,89 @@ class BoundedFileHistory(FileHistory):
         self._entries += 1
         if self._entries > self.max_entries + HISTORY_TRIM_SLACK:
             self.trim()
+
+
+class SelectedLines(set[int]):
+    """Numbers of the chosen history lines, iterated in the order they were chosen.
+
+    Only the methods the history browser of ptpython uses keep the order: ``add``, ``remove``, ``discard``,
+    ``clear``, ``in``, ``len`` and the iteration.
+    """
+
+    def __init__(self) -> None:
+        """SelectedLines constructor: an empty set."""
+        super().__init__()
+        self._order: dict[int, None] = {}
+
+    def add(self, line: int) -> None:
+        """Choose a line; a line chosen already keeps its place.
+
+        :param line: number of the history line
+        """
+        if line not in self:
+            super().add(line)
+            self._order[line] = None
+
+    def remove(self, line: int) -> None:
+        """Unchoose a line.
+
+        :param line: number of the history line
+        :raises KeyError: if the line is not chosen
+        """
+        super().remove(line)
+        del self._order[line]
+
+    def discard(self, line: object) -> None:
+        """Unchoose a line if it is chosen.
+
+        :param line: number of the history line; anything else is not chosen and does nothing, as in ``set``
+        """
+        super().discard(line)
+        if isinstance(line, int):
+            self._order.pop(line, None)
+
+    def clear(self) -> None:
+        """Unchoose every line."""
+        super().clear()
+        self._order.clear()
+
+    def __iter__(self) -> Iterator[int]:
+        """Iterate the lines in the order they were chosen.
+
+        :returns: iterator over the line numbers
+        """
+        return iter(self._order)
+
+
+def in_selection_order(lines: Iterable[int]) -> list[int]:
+    """Answer the lines as they come: the replacement of ``sorted`` in the history browser of ptpython.
+
+    :param lines: chosen lines, iterated in the order they were chosen
+    :returns: the lines in that order
+    """
+    return list(lines)
+
+
+class OrderedHistoryMapping(HistoryMapping):
+    """The mapping of the history browser keeping the chosen lines in the order they were chosen."""
+
+    def __init__(self, history: PythonHistory, python_history: History, original_document: Document) -> None:
+        """OrderedHistoryMapping constructor: the mapping of ptpython with a ``SelectedLines`` set.
+
+        :param history: the history browser
+        :param python_history: the command history
+        :param original_document: the input the browser was opened from
+        """
+        super().__init__(history, python_history, original_document)
+        self.selected_lines = SelectedLines()
+
+
+def insert_in_selection_order() -> None:
+    """Switch the history browser of ptpython to inserting the chosen lines in the order they were chosen.
+
+    The browser builds its mapping and orders the chosen lines through the names of its own module, so the
+    two names are replaced there; calling this twice changes nothing more.
+    """
+    module = vars(history_browser)
+    module["HistoryMapping"] = OrderedHistoryMapping
+    module["sorted"] = in_selection_order
