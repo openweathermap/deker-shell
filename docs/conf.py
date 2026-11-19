@@ -10,8 +10,8 @@ import os
 import sys
 
 project = "Deker shell"
-copyright = "2023-2026, OpenWeather"
-author = "OpenWeather"
+copyright = "2023-2026, Openweather Ltd."
+author = "Openweather Ltd."
 
 # Add support for auto-doc
 
