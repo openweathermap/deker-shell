@@ -91,6 +91,17 @@ class TestStart:
         assert result.exit_code == 1
         assert result.output == "Error: File does not exist\n"
 
+    def test_start_with_py_file_runs_the_script(self, tmp_path):
+        """A .py file in place of the uri is run as a script, without a shell."""
+        trace = tmp_path / "trace.txt"
+        script = tmp_path / "script.py"
+        script.write_text(f"from pathlib import Path\nPath({str(trace)!r}).write_text('ran')\n")
+        with patch.object(main, "interactive_shell") as shell:
+            result = runner.invoke(start, [str(script)])
+        assert result.exit_code == 0
+        assert trace.read_text() == "ran"
+        shell.assert_not_called()
+
     def test_dotted_extra_parameters_are_grouped(self):
         """``--conf.a 1 --conf.b 2`` builds one nested dict, the second key does not wipe the first."""
         # a plain MagicMock, not the AsyncMock patch would pick for a coroutine function: asyncio.run is patched too
