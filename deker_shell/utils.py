@@ -1,5 +1,5 @@
 # deker-shell - interactive management shell for deker
-# Copyright (C) 2023  OpenWeather
+# Copyright (C) 2023-2026  Openweather Ltd.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,16 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from importlib.util import find_spec
 from urllib.parse import urlparse
 
 from click import ClickException
 
+from deker_shell.consts import URI_SCHEME_ADAPTERS
+
 
 def validate_uri(uri: str) -> None:
-    """Validate uri.
+    """Validate uri: the scheme must be supported and the adapters serving it must be installed.
 
     :param uri: client uri
+    :raises ClickException: if the scheme is unknown or its adapters package is missing
     """
     uri_scheme = urlparse(uri).scheme
-    if uri_scheme not in ("http", "file"):
+    if uri_scheme not in URI_SCHEME_ADAPTERS:
         raise ClickException("Invalid uri")
+
+    package, distribution = URI_SCHEME_ADAPTERS[uri_scheme]
+    if find_spec(package) is None:
+        raise ClickException(f"Deker adapters for '{uri_scheme}://' are not installed, run: pip install {distribution}")

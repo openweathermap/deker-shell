@@ -1,5 +1,5 @@
 # deker-shell - interactive management shell for deker
-# Copyright (C) 2023  OpenWeather
+# Copyright (C) 2023-2026  Openweather Ltd.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,8 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from pathlib import Path
+
 import deker
 
+# uri scheme -> (importable package, pip distribution) of the Deker adapters that serve it
+URI_SCHEME_ADAPTERS = {
+    "file": ("deker_local_adapters", "deker-local-adapters"),
+    "http": ("deker_server_adapters", "deker-server-adapters"),
+    "https": ("deker_server_adapters", "deker-server-adapters"),
+}
+SUPPORTED_URI_SCHEMES = tuple(URI_SCHEME_ADAPTERS)
+
+DEFAULT_HISTORY_FILE = Path.home() / ".deker_shell_history"
+DEFAULT_HISTORY_SIZE = 1000  # commands kept in the history file
+HISTORY_TRIM_SLACK = 100  # extra commands allowed in the file before it is rewritten
+
+# shell helpers offered before other names of the same completion quality
+PRESET_NAMES = ("client", "collections", "collection", "use", "get_global_coll_variable", "help")
 
 help_start = """
 This is an interactive python interface to Deker, based on ptpython.
@@ -54,7 +70,8 @@ Classes:
 - Subset: subset of Array data with set bounds and shape, can read, update and clear the data within the array
 - VSubset: virtual subset of VArray data with set bounds and shape
 - ArraySchema: schema with arrays attributes, dimensions and dtype, needed to create collection
-- VArraySchema: ArraySchema with vgrid: an ordered sequence of positive integers, used for splitting virtual array into ordinary arrays  # noqa E501
+- VArraySchema: ArraySchema with vgrid: an ordered sequence of positive integers,
+  used for splitting virtual array into ordinary arrays
 - DimensionSchema: dimensions (data) schema, you can also use TimeDimensionSchema
 
 Methods:

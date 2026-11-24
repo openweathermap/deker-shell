@@ -1,5 +1,5 @@
-# deker-shell - interactive management shell for deker
-# Copyright (C) 2023  OpenWeather
+# deker-shell - interactive Python shell for deker
+# Copyright (C) 2023-2026  Openweather Ltd.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,98 +14,103 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Any, Callable, Dict, Iterable
+import re
 
-from deker.types.private.shell import shell_completions
+from collections.abc import Callable, Iterable
+from typing import Any
+
 from prompt_toolkit.completion import CompleteEvent, Completer, Completion
 from prompt_toolkit.document import Document
-from ptpython.completer import PythonCompleter, _get_style_for_jedi_completion
-from ptpython.utils import get_jedi_script_from_document
+from ptpython.completer import PythonCompleter
+
+from deker_shell.consts import PRESET_NAMES
+
+# the cursor is inside ``use(``: an optional opening quote and the name typed so far
+USE_CALL = re.compile(r"""\buse\(\s*(?P<quote>['"]?)(?P<prefix>[^'"()]*)$""")
 
 
-class JediCompleter(Completer):
-    """Overrided ptpython jedi completer."""
+class DekerCompleter(Completer):
+    """The stock ptpython completer with Deker tweaks.
+
+    Inside ``use(`` only the names of the existing collections (the ``collections`` variable of
+    the session) are offered, quoted. Names starting with ``_`` and ``mro`` are hidden until the
+    word being typed starts with ``_``. The shell presets (``client``, ``collections``...) come
+    before other names of the same match quality. Everything else is ptpython's behaviour: jedi
+    offers parameters in an argument position and names in a value position, functions are
+    displayed with ``()`` and parameters with ``...``.
+    """
 
     def __init__(
         self,
-        get_globals: Callable[[], Dict[str, Any]],
-        get_locals: Callable[[], Dict[str, Any]],
+        get_globals: Callable[[], dict[str, Any]],
+        get_locals: Callable[[], dict[str, Any]],
+        enable_dictionary_completion: Callable[[], bool],
     ) -> None:
-        super().__init__()
+        """Build the stock completer this one wraps.
 
-        self.get_globals = get_globals
-        self.get_locals = get_locals
+        :param get_globals: function returning the REPL globals
+        :param get_locals: function returning the REPL locals
+        :param enable_dictionary_completion: function returning the ptpython dictionary completion flag
+        """
+        self._get_globals = get_globals
+        self._get_locals = get_locals
+        self._python_completer = PythonCompleter(get_globals, get_locals, enable_dictionary_completion)
+
+    def _collection_names(self) -> list[str] | None:
+        """Names of the collections known to the session.
+
+        :returns: the ``collections`` variable of the REPL, or ``None`` if there is no such list of strings
+        """
+        names = self._get_locals().get("collections", self._get_globals().get("collections"))
+        if isinstance(names, list) and all(isinstance(name, str) for name in names):
+            return names
+        return None
+
+    def _use_completions(self, document: Document) -> list[Completion] | None:
+        """Collection names for the cursor inside ``use(``.
+
+        :param document: user input
+        :returns: quoted collection names starting with what is typed, or ``None`` when the cursor is
+            not inside ``use(`` or the session has no ``collections`` list to offer
+        """
+        match = USE_CALL.search(document.text_before_cursor)
+        if match is None:
+            return None
+        names = self._collection_names()
+        if names is None:
+            return None
+        quote, prefix = match["quote"], match["prefix"]
+        closing_present = bool(quote) and document.text_after_cursor.startswith(quote)
+        completions = []
+        for name in names:
+            if not name.startswith(prefix):
+                continue
+            if not quote:
+                text = f'"{name}"'
+            elif closing_present:
+                text = name
+            else:
+                text = f"{name}{quote}"
+            completions.append(Completion(text, -len(prefix), display=name, display_meta="collection"))
+        return completions
 
     def get_completions(self, document: Document, complete_event: CompleteEvent) -> Iterable[Completion]:
-        """Yields prompt toolkit completions.
+        """Yield prompt toolkit completions.
 
         :param document: user input
         :param complete_event: event that called the completer
+        :yields: completions matching the current user input
         """
-        script = get_jedi_script_from_document(document, self.get_locals(), self.get_globals())
-
-        if script:
-            try:
-                jedi_completions = [
-                    completion
-                    for completion in script.complete(
-                        column=document.cursor_position_col,
-                        line=document.cursor_position_row + 1,
-                    )
-                    if not completion.name.startswith(("_", "__", "mro"))
-                ]  # hide private and magic methods
-            except Exception:
-                # Supress all Jedi exceptions.
-                pass
-            else:
-                # Move function parameters to the top.
-                jedi_completions = sorted(
-                    jedi_completions,
-                    key=lambda jc: (
-                        # Params first.
-                        jc.type != "param",
-                        # non builtins libs first
-                        not jc.module_name.startswith("jedi"),
-                        # Private at the end.
-                        jc.name.startswith("_"),
-                        # Then sort by name.
-                        jc.name_with_symbols.lower(),
-                    ),
-                )
-                for jc in jedi_completions:
-                    if any(deker_obj in document.text for deker_obj in shell_completions) and jc.type != "param":
-                        continue
-                    if jc.type == "function":
-                        suffix = "()"
-                    else:
-                        suffix = ""
-
-                    if jc.type == "param":
-                        suffix = "..."
-
-                    yield Completion(
-                        jc.name_with_symbols,
-                        len(jc.complete) - len(jc.name_with_symbols),
-                        display=jc.name_with_symbols + suffix,
-                        display_meta=jc.type,
-                        style=_get_style_for_jedi_completion(jc),
-                    )
-
-
-def get_repl_completer(
-    get_globals: Callable, get_locals: Callable, enable_dictionary_completion: bool
-) -> PythonCompleter:
-    """Return repl completer with custom jedi completer.
-
-    :param get_globals: function returning globals
-    :param get_locals: function returning locals
-    :param enable_dictionary_completion: repl flag
-    """
-    jedi_completer = JediCompleter(get_globals, get_locals)
-    repl_completer = PythonCompleter(
-        get_globals,
-        get_locals,
-        lambda: enable_dictionary_completion,
-    )
-    repl_completer._jedi_completer = jedi_completer  # type: ignore
-    return repl_completer
+        use_completions = self._use_completions(document)
+        if use_completions is not None:
+            yield from use_completions
+            return
+        show_private = document.get_word_before_cursor().startswith("_")
+        presets: list[Completion] = []
+        others: list[Completion] = []
+        for completion in self._python_completer.get_completions(document, complete_event):
+            if not show_private and completion.text.startswith(("_", "mro")):
+                continue
+            (presets if completion.text in PRESET_NAMES else others).append(completion)
+        yield from presets
+        yield from others
